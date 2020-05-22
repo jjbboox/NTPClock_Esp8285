@@ -1,8 +1,5 @@
 #include <NTPClient.h>
-// change next line to use with another board/shield
 #include <ESP8266WiFi.h>
-//#include <WiFi.h> // for WiFi shield
-//#include <WiFi101.h> // for WiFi 101 shield or MKR1000
 #include <WiFiUdp.h>
 #include <Wire.h>
 #include <TM1650.h>
@@ -12,6 +9,8 @@ const char *ssid     = "XXXXXXXXX";
 const char *password = "xxxxxxxxxxxxxx";
 
 WiFiUDP ntpUDP;
+
+// NTP服务器地址和同步间隔时间
 NTPClient timeClient(ntpUDP, "192.168.11.20", 8 * 60 * 60);
 
 // 驱动数码管的TM1650的I2C总线端口
@@ -51,13 +50,8 @@ void show_timer(NTPClient &ntp_time) {
 
 void setup(){
   Serial.begin(115200);
-
-  // WiFi.begin(ssid, password);
-
-  // while ( WiFi.status() != WL_CONNECTED ) {
-  //   delay ( 500 );
-  //   Serial.print ( "." );
-  // }
+  
+  // 自动配置WiFi
   air_kiss_connect();
 
   // Wait for connection
@@ -72,10 +66,9 @@ void setup(){
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
+  // 启动NTP连接获取同步时间
   timeClient.begin();
-  // timeClient.setUpdateInterval(60 * 60 * 1000);
-  // timeClient.setTimeOffset(8 * 60 * 60);
-
+  
   // 初始化I2C总线
   I2C_init(TM1650_SDA, TM1650_SCL);
   
@@ -87,10 +80,12 @@ void setup(){
 }
 
 void loop() {
+  // 更新TNP时间
   timeClient.update();
 
   Serial.println(timeClient.getFormattedTime());
+  // 显示时间
   show_timer(timeClient);
-
+  // 等待1s
   delay(1000);
 }
