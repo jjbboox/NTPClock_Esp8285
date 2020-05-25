@@ -5,12 +5,11 @@
 #include <TM1650.h>
 #include "air_kiss_connect.h"
 
-const char *ssid     = "XXXXXXXXX";
-const char *password = "xxxxxxxxxxxxxx";
-
 WiFiUDP ntpUDP;
 
 // NTP服务器地址和同步间隔时间
+// NTP服务器可以选择提供NTP服务的路由，NAS，或者是任何一个提供NTP服务的网站
+// 指定同步间隔，两次同步之间会自动走时，所以不需要一刻不停的同步，本例中为8小时同步一次
 NTPClient timeClient(ntpUDP, "192.168.11.20", 8 * 60 * 60);
 
 // 驱动数码管的TM1650的I2C总线端口
@@ -52,6 +51,7 @@ void setup(){
   Serial.begin(115200);
   
   // 自动配置WiFi
+  // 使用安信可的自动配网微信小程序，或者安卓APP（SmartConnect）进行配网
   air_kiss_connect();
 
   // Wait for connection
@@ -87,5 +87,5 @@ void loop() {
   // 显示时间
   show_timer(timeClient);
   // 等待1s
-  delay(1000);
+  delay(100);
 }
