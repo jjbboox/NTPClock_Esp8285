@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <err_signal.h>
 #ifdef ESP32
 #include <WiFi.h>
 #else
@@ -25,8 +24,6 @@ void air_kiss_connect()
 
     while (WiFi.status() != WL_CONNECTED)
     {
-        SysSignal.toggle(500);
-
         Serial.print(".");
         if (cnt++ >= 30)
         {
@@ -34,15 +31,12 @@ void air_kiss_connect()
             WiFi.beginSmartConfig();
             while (true)
             {
-                SysSignal.toggle(1000);
-
                 if (WiFi.smartConfigDone())
                 {
                     Serial.println("SmartConfig Success");
                     break;
                 }
             }
-            SysSignal.off();
         }
     }
 }

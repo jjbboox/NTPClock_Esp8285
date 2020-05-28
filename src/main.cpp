@@ -5,9 +5,6 @@
 #include <TM1650.h>
 #include "air_kiss_connect.h"
 
-const char *ssid     = "XXXXXXXXX";
-const char *password = "xxxxxxxxxxxxxx";
-
 WiFiUDP ntpUDP;
 
 // NTP服务器地址和同步间隔时间

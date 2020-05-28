@@ -3,8 +3,4 @@
 
 void air_kiss_connect();
 
-extern void (*signal_on)(void);
-extern void (*signal_off)(void);
-extern void (*signal_toggle)(void);
-
 #endif
