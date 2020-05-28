@@ -7,8 +7,11 @@
 
 WiFiUDP ntpUDP;
 
+#define NTP_SERVER_ADDR   "ntp.sjtu.edu.cn" // NTP服务器地址，可自行修改
+#define NTP_UPDATE_SECS   (8*60*60)         // 8小时同步一次时间
+
 // NTP服务器地址和同步间隔时间
-NTPClient timeClient(ntpUDP, "192.168.11.20", 8 * 60 * 60);
+NTPClient timeClient(ntpUDP, NTP_SERVER_ADDR, NTP_UPDATE_SECS);
 
 // 驱动数码管的TM1650的I2C总线端口
 #define TM1650_SDA  9
@@ -52,17 +55,17 @@ void setup(){
   air_kiss_connect();
 
   // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
+  if(WiFi.status() != WL_CONNECTED) {
+    Serial.println("Can not connect to WIFI!");
+  }
+  else {
+    Serial.println("");
+    Serial.print("Connected to ");
+    Serial.println(WiFi.SSID());
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
   }
   
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(WiFi.SSID());
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
   // 启动NTP连接获取同步时间
   timeClient.begin();
   
