@@ -79,13 +79,23 @@ void setup(){
 
 }
 
-void loop() {
-  // 更新TNP时间
-  timeClient.update();
+void clock_loop() {
+  static uint32_t time_out = 0; // 刷新时间控制
+  uint32_t now_mill = millis(); // 当前的系统时间
+  
+  // 如果系统计时器溢出
+  if(now_mill >= time_out {
+    // 设定下次刷新的时间点（1s以后再次刷新）
+    time_out = now_mill + 1000;
+    // 更新TNP时间
+    timeClient.update();
 
-  Serial.println(timeClient.getFormattedTime());
-  // 显示时间
-  show_timer(timeClient);
-  // 等待1s
-  delay(1000);
+    Serial.println(timeClient.getFormattedTime());
+    // 显示时间
+    show_timer(timeClient);
+  }
+}
+
+void loop() {
+  clock_loop();
 }
