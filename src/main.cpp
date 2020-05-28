@@ -51,12 +51,23 @@ void show_timer(NTPClient &ntp_time) {
 void setup(){
   Serial.begin(115200);
   
+  // 初始化I2C总线
+  I2C_init(TM1650_SDA, TM1650_SCL);
+  
+  // 初始化数码管
+  NixieTube.init();
+  // 设置数码管亮度
+  NixieTube.setBrightness(3);
+
+  NixieTube.displayString("0000");
+  
   // 自动配置WiFi
   air_kiss_connect();
 
   // Wait for connection
   if(WiFi.status() != WL_CONNECTED) {
     Serial.println("Can not connect to WIFI!");
+    NixieTube.displayString("Err ");
   }
   else {
     Serial.println("");
@@ -67,16 +78,7 @@ void setup(){
   }
   
   // 启动NTP连接获取同步时间
-  timeClient.begin();
-  
-  // 初始化I2C总线
-  I2C_init(TM1650_SDA, TM1650_SCL);
-  
-  // 初始化数码管
-  NixieTube.init();
-  // 设置数码管亮度
-  NixieTube.setBrightness(3);
-
+  timeClient.begin();  
 }
 
 void clock_loop() {
