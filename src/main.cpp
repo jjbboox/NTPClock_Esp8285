@@ -84,7 +84,7 @@ void clock_loop() {
   uint32_t now_mill = millis(); // 当前的系统时间
   
   // 如果系统计时器溢出
-  if(now_mill >= time_out {
+  if(now_mill >= time_out) {
     // 设定下次刷新的时间点（1s以后再次刷新）
     time_out = now_mill + 1000;
     // 更新TNP时间
