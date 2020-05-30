@@ -8,7 +8,7 @@
 WiFiUDP ntpUDP;
 
 
-#define NTP_SERVER_ADDR   "192.168.11.20" // NTP服务器地址，可自行修改
+#define NTP_SERVER_ADDR   "ntp.sjtu.edu.cn" // NTP服务器地址，可自行修改
 #define NTP_UPDATE_SECS   (8*60*60)         // 8小时同步一次时间
 
 // NTP服务器地址和同步间隔时间
