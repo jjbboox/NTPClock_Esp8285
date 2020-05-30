@@ -6,11 +6,13 @@
 #endif
 
 #ifdef _USER_SSID_
-const String ssid = "xxxxxx";
-const String pwd = "xxxxxxxx";
+const String ssid = "my_ssid_xxxx";
+const String pwd = "my_wifi_password";
 #endif
 
-void air_kiss_connect()
+
+
+void air_kiss_connect(void (*tick_fun)(String))
 {
     int cnt = 0;
 
@@ -21,19 +23,23 @@ void air_kiss_connect()
 #else
     WiFi.begin();
 #endif
-
+    tick_fun("START");
     while (WiFi.status() != WL_CONNECTED)
     {
-        Serial.print(".");
+        delay(500);
+        tick_fun(".");
         if (cnt++ >= 30)
         {
-            
+            tick_fun("SMART");
             WiFi.beginSmartConfig();
             while (true)
             {
+                delay(1000);
                 if (WiFi.smartConfigDone())
                 {
-                    Serial.println("SmartConfig Success");
+                    tick_fun("Success");
+                    // Serial.println("SmartConfig Success");
+                    while (WiFi.status() != WL_CONNECTED);
                     break;
                 }
             }
