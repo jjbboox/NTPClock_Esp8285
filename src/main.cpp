@@ -7,7 +7,8 @@
 
 WiFiUDP ntpUDP;
 
-#define NTP_SERVER_ADDR   "ntp.sjtu.edu.cn" // NTP服务器地址，可自行修改
+
+#define NTP_SERVER_ADDR   "192.168.11.20" // NTP服务器地址，可自行修改
 #define NTP_UPDATE_SECS   (8*60*60)         // 8小时同步一次时间
 
 // NTP服务器地址和同步间隔时间
@@ -24,7 +25,28 @@ NTPClient timeClient(ntpUDP, NTP_SERVER_ADDR, NTP_UPDATE_SECS);
 #define TM1650_SEMICOLON_POS  1
 
 // 数码管对象实例
-TM1650  NixieTube;
+TM1650  NixieTube(4);
+
+
+void def_tick_fun(String str) {
+  static bool dot;
+  if(str.equalsIgnoreCase("START")) {
+    NixieTube.clear();
+    NixieTube.displayString("c---");
+  }
+  else if(str.equalsIgnoreCase("SMART")) {
+    NixieTube.clear();
+    NixieTube.displayString("s---");
+  }
+  else if(str.equalsIgnoreCase("Success")) {
+    NixieTube.clear();
+    NixieTube.displayString("done");
+  }
+  else if(str.equalsIgnoreCase(".")) {
+    dot = !dot;
+    NixieTube.setDot(TM1650_SEMICOLON_POS, dot);
+  }
+}
 
 void I2C_init(uint8_t sda_pin, uint8_t scl_pin) {
   // TM1650 I2C总线设置为上拉
@@ -48,21 +70,39 @@ void show_timer(NTPClient &ntp_time) {
   NixieTube.displayString(str);
 }
 
+void show_start() {
+  uint8_t v = 0x01;
+  for(int d = 0; d < 4; d++) {
+    v = 1;
+    NixieTube.clear();
+    for(int i = 0; i < 7; i++) {
+      NixieTube.setPosition(d, v);
+      v <<= 1;
+      delay(50);
+    }
+  }
+}
+
 void setup(){
   Serial.begin(115200);
+
+  Serial.println("Serial Init Ok!");
   
   // 初始化I2C总线
   I2C_init(TM1650_SDA, TM1650_SCL);
   
+  Serial.println("I2C init ok.");
   // 初始化数码管
   NixieTube.init();
+  Serial.println("NixieTube init ok.");
   // 设置数码管亮度
   NixieTube.setBrightness(3);
-
-  NixieTube.displayString("0000");
   
+  show_start();
+  
+  Serial.println("Air kiss connect start.");
   // 自动配置WiFi
-  air_kiss_connect();
+  air_kiss_connect(def_tick_fun);
 
   // Wait for connection
   if(WiFi.status() != WL_CONNECTED) {
