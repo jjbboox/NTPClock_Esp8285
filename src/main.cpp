@@ -27,7 +27,7 @@ NTPClient timeClient(ntpUDP, NTP_SERVER_ADDR, NTP_UPDATE_SECS);
 // 数码管对象实例
 TM1650  NixieTube(4);
 
-
+// AirKissConnect的状态回调函数
 void def_tick_fun(String str) {
   static bool dot;
   if(str.equalsIgnoreCase("START")) {
@@ -101,7 +101,7 @@ void setup(){
   show_start();
   
   Serial.println("Air kiss connect start.");
-  // 自动配置WiFi
+  // 调用AirKissConnect配置无线网络，回调函数用来处理返回内容
   air_kiss_connect(def_tick_fun);
 
   // Wait for connection
