@@ -12,7 +12,7 @@ const String pwd = "my_wifi_password";
 
 
 
-void air_kiss_connect(void (*tick_fun)(String))
+bool air_kiss_connect(void (*tick_fun)(String))
 {
     int cnt = 0;
 
@@ -45,4 +45,5 @@ void air_kiss_connect(void (*tick_fun)(String))
             }
         }
     }
+    return true;
 }
