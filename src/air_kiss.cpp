@@ -10,7 +10,7 @@ const String ssid = "my_ssid_xxxx";
 const String pwd = "my_wifi_password";
 #endif
 
-air_kiss_connect(void (*tick_fun)(String))
+void air_kiss_connect(void (*tick_fun)(String))
 {
     int cnt = 0;
 
@@ -43,5 +43,4 @@ air_kiss_connect(void (*tick_fun)(String))
             }
         }
     }
-    return true;
 }
