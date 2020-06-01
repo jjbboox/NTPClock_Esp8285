@@ -10,8 +10,6 @@ const String ssid = "my_ssid_xxxx";
 const String pwd = "my_wifi_password";
 #endif
 
-
-
 void air_kiss_connect(void (*tick_fun)(String))
 {
     int cnt = 0;
