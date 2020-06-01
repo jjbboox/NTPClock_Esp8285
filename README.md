@@ -1,4 +1,4 @@
-# NTPClock_Esp8285
+# NTP Clock Esp8285
 ## 功能
 开机先显示一段数码管自检小动画
 
