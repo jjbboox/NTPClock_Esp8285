@@ -34,7 +34,7 @@
 ![背面](/pic/IMG_20200531_153719_s.jpg) 
 
 ## 视频连接
-![ESP8285(Esp8266) NTP时钟](https://v.youku.com/v_show/id_XNDY5MzYzMDg1Mg==.html)
+[![ESP8285(Esp8266) NTP时钟](/pic/IMG_20200531_153719_s.jpg)](https://v.youku.com/v_show/id_XNDY5MzYzMDg1Mg==.html)
 
 
 NTP Clock By Arduino
