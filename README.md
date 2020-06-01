@@ -9,3 +9,6 @@ NTP Clock By Arduino
 
 引脚连接请参考
 /doc/Pin_Map.txt
+
+电路图请参考
+/doc/电路图.xlsx
