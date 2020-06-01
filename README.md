@@ -35,7 +35,8 @@
 
 ## 视频连接
 >ESP8285(Esp8266) NTP时钟
-<video src="https://v.youku.com/v_show/id_XNDY5MzYzMDg1Mg==.html" controls="controls" width="500" height="300">您的浏览器不支持播放该视频！</video>
+[![Watch the video](/pic/IMG_20200531_153719_s.jpg)](https://v.youku.com/v_show/id_XNDY5MzYzMDg1Mg==.html)
+
 
 NTP Clock By Arduino
 
