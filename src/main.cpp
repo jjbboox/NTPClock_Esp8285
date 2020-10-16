@@ -3,7 +3,7 @@
 #include <WiFiUdp.h>
 #include <Wire.h>
 #include <TM1650.h>
-#include "air_kiss_connect.h"
+#include <air_kiss_connect.h>
 
 WiFiUDP ntpUDP;
 
@@ -32,15 +32,15 @@ void def_tick_fun(String str) {
   static bool dot;
   if(str.equalsIgnoreCase("START")) {
     NixieTube.clear();
-    NixieTube.displayString("conn");
+    NixieTube.displayString((char*)"conn");
   }
   else if(str.equalsIgnoreCase("SMART")) {
     NixieTube.clear();
-    NixieTube.displayString("smrt");
+    NixieTube.displayString((char*)"smrt");
   }
   else if(str.equalsIgnoreCase("Success")) {
     NixieTube.clear();
-    NixieTube.displayString("done");
+    NixieTube.displayString((char*)"done");
   }
   else if(str.equalsIgnoreCase(".")) {
     dot = !dot;
@@ -138,7 +138,7 @@ void setup(){
   // Wait for connection
   if(WiFi.status() != WL_CONNECTED) {
     Serial.println("Can not connect to WIFI!");
-    NixieTube.displayString("Err ");
+    NixieTube.displayString((char*)"Err ");
   }
   else {
     Serial.println("");
