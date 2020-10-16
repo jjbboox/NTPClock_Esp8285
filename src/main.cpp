@@ -32,11 +32,11 @@ void def_tick_fun(String str) {
   static bool dot;
   if(str.equalsIgnoreCase("START")) {
     NixieTube.clear();
-    NixieTube.displayString("c---");
+    NixieTube.displayString("conn");
   }
   else if(str.equalsIgnoreCase("SMART")) {
     NixieTube.clear();
-    NixieTube.displayString("s---");
+    NixieTube.displayString("smrt");
   }
   else if(str.equalsIgnoreCase("Success")) {
     NixieTube.clear();
