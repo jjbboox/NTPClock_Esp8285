@@ -59,15 +59,46 @@ void I2C_init(uint8_t sda_pin, uint8_t scl_pin) {
 
 // 数码管显示剩余时间
 void show_timer(NTPClient &ntp_time) {
+  // 上一次的显示内容
+  static char lastStr[5] = "    ";
+
   // 显示缓存
   char str[5];
   // 打印显示字符串
   sprintf(str, "%02d%02d", ntp_time.getHours(), ntp_time.getMinutes());
+
+  char tmpStr[5];
+  tmpStr[0] = lastStr[0] == str[0]?lastStr[0]:' ';
+  tmpStr[1] = lastStr[1] == str[1]?lastStr[1]:' ';
+  tmpStr[2] = lastStr[2] == str[2]?lastStr[2]:' ';
+  tmpStr[3] = lastStr[3] == str[3]?lastStr[3]:' ';
+  tmpStr[4] = 0x00;
+  char oldStr[5];
+  strcpy(oldStr, lastStr);
+  strcpy(lastStr, str);
+
   // 根据秒数的奇偶来切换":"显示
-  
   str[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
+  tmpStr[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
+  oldStr[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
+
   // 显示
-  NixieTube.displayString(str);
+  // 旧值渐暗
+  for(int i = 0; i < 10; i++) {
+    NixieTube.displayString(oldStr);
+    delay(10 - i);
+    NixieTube.displayString(tmpStr);
+    delay(i);
+  }
+  // 新值渐亮
+  for(int i = 0; i < 10; i++) {
+    NixieTube.displayString(tmpStr);
+    delay(10 - i);
+    NixieTube.displayString(str);
+    delay(i);
+  }
+  
+  // NixieTube.displayString(str);
 }
 
 void show_start() {
