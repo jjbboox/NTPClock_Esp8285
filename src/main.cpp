@@ -66,6 +66,7 @@ void show_timer(NTPClient &ntp_time) {
   char str[5];
   // 打印显示字符串
   sprintf(str, "%02d%02d", ntp_time.getHours(), ntp_time.getMinutes());
+  // sprintf(str, "%02d%02d", ntp_time.getMinutes(), ntp_time.getSeconds());
 
   char tmpStr[5];
   tmpStr[0] = lastStr[0] == str[0]?lastStr[0]:' ';
@@ -82,20 +83,24 @@ void show_timer(NTPClient &ntp_time) {
   tmpStr[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
   oldStr[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
 
+  const int perMs = 1;
+  const int xtimes = 10;
+  const int dlyMs = perMs * xtimes * xtimes / 2;
   // 显示
   // 旧值渐暗
-  for(int i = 0; i < 10; i++) {
+  for(int i = 0; i < xtimes; i++) {
     NixieTube.displayString(oldStr);
-    delay(10 - i);
+    delay((xtimes - i) * perMs);
     NixieTube.displayString(tmpStr);
-    delay(i);
+    delay(i * perMs);
   }
+  delay(dlyMs);
   // 新值渐亮
-  for(int i = 0; i < 10; i++) {
+  for(int i = 0; i < xtimes; i++) {
     NixieTube.displayString(tmpStr);
-    delay(10 - i);
+    delay((xtimes - i) * perMs);
     NixieTube.displayString(str);
-    delay(i);
+    delay(i * perMs);
   }
   
   // NixieTube.displayString(str);
