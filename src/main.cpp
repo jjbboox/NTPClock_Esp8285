@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include <TM1650.h>
 #include <air_kiss_connect.h>
+#include <show_clock.h>
 
 WiFiUDP ntpUDP;
 
@@ -26,6 +27,7 @@ NTPClient timeClient(ntpUDP, NTP_SERVER_ADDR, NTP_UPDATE_SECS);
 
 // 数码管对象实例
 TM1650  NixieTube(4);
+ShowClock show_clock(NixieTube);
 
 // AirKissConnect的状态回调函数
 void def_tick_fun(String str) {
@@ -59,51 +61,12 @@ void I2C_init(uint8_t sda_pin, uint8_t scl_pin) {
 
 // 数码管显示剩余时间
 void show_timer(NTPClient &ntp_time) {
-  // 上一次的显示内容
-  static char lastStr[5] = "    ";
-
-  // 显示缓存
   char str[5];
-  // 打印显示字符串
   sprintf(str, "%02d%02d", ntp_time.getHours(), ntp_time.getMinutes());
-  // sprintf(str, "%02d%02d", ntp_time.getMinutes(), ntp_time.getSeconds());
-
-  char tmpStr[5];
-  tmpStr[0] = lastStr[0] == str[0]?lastStr[0]:' ';
-  tmpStr[1] = lastStr[1] == str[1]?lastStr[1]:' ';
-  tmpStr[2] = lastStr[2] == str[2]?lastStr[2]:' ';
-  tmpStr[3] = lastStr[3] == str[3]?lastStr[3]:' ';
-  tmpStr[4] = 0x00;
-  char oldStr[5];
-  strcpy(oldStr, lastStr);
-  strcpy(lastStr, str);
-
-  // 根据秒数的奇偶来切换":"显示
   str[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
-  tmpStr[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
-  oldStr[TM1650_SEMICOLON_POS] |= (ntp_time.getSeconds()%2)?0x80:0x00;
-
-  const int perMs = 1;
-  const int xtimes = 10;
-  const int dlyMs = perMs * xtimes * xtimes / 2;
-  // 显示
-  // 旧值渐暗
-  for(int i = 0; i < xtimes; i++) {
-    NixieTube.displayString(oldStr);
-    delay((xtimes - i) * perMs);
-    NixieTube.displayString(tmpStr);
-    delay(i * perMs);
-  }
-  delay(dlyMs);
-  // 新值渐亮
-  for(int i = 0; i < xtimes; i++) {
-    NixieTube.displayString(tmpStr);
-    delay((xtimes - i) * perMs);
-    NixieTube.displayString(str);
-    delay(i * perMs);
-  }
-  
-  // NixieTube.displayString(str);
+  // show_clock.Motion_Nomal(String(str));
+  // show_clock.Motion_FadeInOut(String(str));
+  show_clock.Motion_SetClearDraw(String(str));
 }
 
 void show_start() {
