@@ -68,6 +68,7 @@ void ShowClock::Motion_SetClearDraw(String newTimeStr, uint16_t ms, uint16_t wai
         }
         delay(ms);
     }
+    oldStr = newTimeStr;
 }
 
 // 淡入淡出
@@ -103,4 +104,5 @@ void ShowClock::Motion_FadeInOut(String newTimeStr, uint16_t steps, uint16_t ms,
             delay((steps - i) * ms);
         }
     }
+    oldStr = newTimeStr;
 }
