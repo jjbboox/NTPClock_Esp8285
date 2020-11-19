@@ -120,7 +120,7 @@ void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms
             char img = getCharImg(c_o);
             img |= c_o & TM1650_DOT;
             for(byte mask = 1; mask != 0x80; mask <<= 1) {
-                if(c_o & mask) {
+                if(img & mask) {
                     img &= ~mask;
                     tm1650.setPosition(i, img);
                     delay(ms);
@@ -138,11 +138,12 @@ void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms
             char img = getCharImg(c_o);
             img |= newTimeStr[i] & TM1650_DOT;
             byte mask = 0x80;
+            byte mask_1 = 0x80;
             for(int j = 0; j < 7; j++) {
                 mask = mask >> 1 | 0x80;
-                if(c_o & mask) {
-                    img &= mask;
-                    tm1650.setPosition(i, img);
+                mask_1 >>= 1;
+                if(img & mask_1) {
+                    tm1650.setPosition(i, img & mask);
                     delay(ms);
                 }
             }
