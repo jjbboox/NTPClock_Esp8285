@@ -111,10 +111,10 @@ void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms
     if(!checkTimeStr(newTimeStr)) return;
     if(newTimeStr.equals(oldStr)) return;
 
-    char tmpStrSpace[5];
-    strcpy(tmpStrSpace, oldStr.c_str());
+    // char tmpStrSpace[5];
+    // strcpy(tmpStrSpace, oldStr.c_str());
     for(int i = 0; i < 4; i++) {
-        char c_s = tmpStrSpace[i] & ~TM1650_DOT;
+        char c_s = oldStr[i] & ~TM1650_DOT;
         char n_s = newTimeStr[i] & ~TM1650_DOT;
 
         if(c_s != n_s) {
@@ -132,7 +132,7 @@ void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms
     }
     delay(wait_ms);
     for(int i = 3; i <= 0; i--) {
-        char c_s = tmpStrSpace[i] & ~TM1650_DOT;
+        char c_s = oldStr[i] & ~TM1650_DOT;
         char n_s = newTimeStr[i] & ~TM1650_DOT;
 
         if(c_s != n_s) {
