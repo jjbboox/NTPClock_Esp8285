@@ -18,7 +18,7 @@ class ShowClock {
         void Motion_Nomal(String newTimeStr, uint16_t wait_ms=0);
         void Motion_SetClearDraw(String newTimeStr, uint16_t ms=10, uint16_t wait_ms=50);
         void Motion_FadeInOut(String newTimeStr, uint16_t steps=10, uint16_t ms=5, uint16_t wait_ms=50);
-        
+        void Motion_SegClear(String newTimeStr, uint16_t ms=10, uint16_t wait_ms=50);
     private:
         TM1650 &tm1650;
         String oldStr;

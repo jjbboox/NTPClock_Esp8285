@@ -106,3 +106,48 @@ void ShowClock::Motion_FadeInOut(String newTimeStr, uint16_t steps, uint16_t ms,
     }
     oldStr = newTimeStr;
 }
+
+void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms) {
+    if(!checkTimeStr(newTimeStr)) return;
+    if(newTimeStr.equals(oldStr)) return;
+
+    char tmpStrSpace[5];
+    strcpy(tmpStrSpace, oldStr.c_str());
+    for(int i = 0; i < 4; i++) {
+        char c_s = tmpStrSpace[i] & ~TM1650_DOT;
+        char n_s = newTimeStr[i] & ~TM1650_DOT;
+
+        if(c_s != n_s) {
+            char c_o = oldStr[i] & ~TM1650_DOT;
+            char img = getCharImg(c_o);
+            img |= c_o & TM1650_DOT;
+            for(byte mask = 1; mask != 0x80; mask <<= 1) {
+                if(c_o & mask) {
+                    img &= ~mask;
+                    tm1650.setPosition(i, img);
+                    delay(ms);
+                }
+            }
+        }
+    }
+    delay(wait_ms);
+    for(int i = 3; i <= 0; i--) {
+        char c_s = tmpStrSpace[i] & ~TM1650_DOT;
+        char n_s = newTimeStr[i] & ~TM1650_DOT;
+
+        if(c_s != n_s) {
+            char c_o = newTimeStr[i] & ~TM1650_DOT;
+            char img = getCharImg(c_o);
+            img |= newTimeStr[i] & TM1650_DOT;
+            byte mask = 0x80;
+            for(int j = 0; j < 7; j++) {
+                mask = mask >> 1 | 0x80;
+                if(c_o & mask) {
+                    img &= mask;
+                    tm1650.setPosition(i, img);
+                    delay(ms);
+                }
+            }
+        }
+    }
+}
