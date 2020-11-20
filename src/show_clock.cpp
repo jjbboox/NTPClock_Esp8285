@@ -71,41 +71,93 @@ void ShowClock::Motion_SetClearDraw(String newTimeStr, uint16_t ms, uint16_t wai
     oldStr = newTimeStr;
 }
 
-// 淡入淡出
 void ShowClock::Motion_FadeInOut(String newTimeStr, uint16_t steps, uint16_t ms, uint16_t wait_ms){
     if(!checkTimeStr(newTimeStr)) return;
     if(newTimeStr.equals(oldStr)) return;
-    char tmpStrNew[5];
-    char tmpStrOld[5];
-    char tmpStrSpace[5];
-    strcpy(tmpStrNew, newTimeStr.c_str());
-    strcpy(tmpStrOld, oldStr.c_str());
-    for(int i = 0; i < 4; i++) {
-        tmpStrOld[i] &= ~TM1650_DOT;
-        tmpStrSpace[i] = tmpStrOld[i];
-        if(tmpStrSpace[i] & ~TM1650_DOT != tmpStrNew[i] & ~TM1650_DOT) tmpStrSpace[i] = ' ';
-        tmpStrSpace[i] |= (tmpStrNew[i] & TM1650_DOT);
-        tmpStrOld[i] |= (tmpStrNew[i] & TM1650_DOT);
-    }
-    for(int i = 1; i <= steps; i++) {
-        tm1650.displayString(tmpStrSpace);
-        delay(i * ms);
-        if(i < steps) {
-            tm1650.displayString(tmpStrOld);
-            delay((steps - i) * ms);
+
+    for(int i = 0; i < steps; i++) {
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(newTimeStr[j] != oldStr[j]) {
+                char img = getCharImg(o_c);
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
         }
+        delay((steps - i) * ms);
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(n_c != o_c) {
+                char img = 0x00;
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
+        }
+        delay(i * ms);
     }
     delay(wait_ms);
-    for(int i = 1; i <= steps; i++) {
-        tm1650.displayString(tmpStrNew);
-        delay(i * ms);
-        if(i < steps) {
-            tm1650.displayString(tmpStrSpace);
-            delay((steps - i) * ms);
+    for(int i = 0; i < steps; i++) {
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(newTimeStr[j] != oldStr[j]) {
+                char img = 0x00;
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
         }
+        delay((steps - i) * ms);
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(newTimeStr[j] != oldStr[j]) {
+                char img = getCharImg(n_c);
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
+        }
+        delay(i * ms);
     }
     oldStr = newTimeStr;
 }
+
+// 淡入淡出
+// void ShowClock::Motion_FadeInOut(String newTimeStr, uint16_t steps, uint16_t ms, uint16_t wait_ms){
+//     if(!checkTimeStr(newTimeStr)) return;
+//     if(newTimeStr.equals(oldStr)) return;
+//     char tmpStrNew[5];
+//     char tmpStrOld[5];
+//     char tmpStrSpace[5];
+//     strcpy(tmpStrNew, newTimeStr.c_str());
+//     strcpy(tmpStrOld, oldStr.c_str());
+//     for(int i = 0; i < 4; i++) {
+//         tmpStrOld[i] &= ~TM1650_DOT;
+//         tmpStrSpace[i] = tmpStrOld[i];
+//         if(tmpStrSpace[i] & ~TM1650_DOT != tmpStrNew[i] & ~TM1650_DOT) tmpStrSpace[i] = ' ';
+//         tmpStrSpace[i] |= (tmpStrNew[i] & TM1650_DOT);
+//         tmpStrOld[i] |= (tmpStrNew[i] & TM1650_DOT);
+//     }
+//     for(int i = 1; i <= steps; i++) {
+//         tm1650.displayString(tmpStrSpace);
+//         delay(i * ms);
+//         if(i < steps) {
+//             tm1650.displayString(tmpStrOld);
+//             delay((steps - i) * ms);
+//         }
+//     }
+//     delay(wait_ms);
+//     for(int i = 1; i <= steps; i++) {
+//         tm1650.displayString(tmpStrNew);
+//         delay(i * ms);
+//         if(i < steps) {
+//             tm1650.displayString(tmpStrSpace);
+//             delay((steps - i) * ms);
+//         }
+//     }
+//     oldStr = newTimeStr;
+// }
 
 void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms) {
     if(!checkTimeStr(newTimeStr)) return;
@@ -149,4 +201,5 @@ void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms
             }
         }
     }
+    oldStr = newTimeStr;
 }
