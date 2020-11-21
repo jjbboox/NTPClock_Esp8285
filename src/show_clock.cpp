@@ -68,39 +68,138 @@ void ShowClock::Motion_SetClearDraw(String newTimeStr, uint16_t ms, uint16_t wai
         }
         delay(ms);
     }
+    oldStr = newTimeStr;
 }
 
-// 淡入淡出
 void ShowClock::Motion_FadeInOut(String newTimeStr, uint16_t steps, uint16_t ms, uint16_t wait_ms){
     if(!checkTimeStr(newTimeStr)) return;
     if(newTimeStr.equals(oldStr)) return;
-    char tmpStrNew[5];
-    char tmpStrOld[5];
-    char tmpStrSpace[5];
-    strcpy(tmpStrNew, newTimeStr.c_str());
-    strcpy(tmpStrOld, oldStr.c_str());
-    for(int i = 0; i < 4; i++) {
-        tmpStrOld[i] &= ~TM1650_DOT;
-        tmpStrSpace[i] = tmpStrOld[i];
-        if(tmpStrSpace[i] & ~TM1650_DOT != tmpStrNew[i] & ~TM1650_DOT) tmpStrSpace[i] = ' ';
-        tmpStrSpace[i] |= (tmpStrNew[i] & TM1650_DOT);
-        tmpStrOld[i] |= (tmpStrNew[i] & TM1650_DOT);
-    }
-    for(int i = 1; i <= steps; i++) {
-        tm1650.displayString(tmpStrSpace);
+
+    for(int i = 0; i < steps; i++) {
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(newTimeStr[j] != oldStr[j]) {
+                char img = getCharImg(o_c);
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
+        }
+        delay((steps - i) * ms);
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(n_c != o_c) {
+                char img = 0x00;
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
+        }
         delay(i * ms);
-        if(i < steps) {
-            tm1650.displayString(tmpStrOld);
-            delay((steps - i) * ms);
+    }
+    delay(wait_ms);
+    for(int i = 0; i < steps; i++) {
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(newTimeStr[j] != oldStr[j]) {
+                char img = 0x00;
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
+        }
+        delay((steps - i) * ms);
+        for(int j = 0; j < 4; j++) {
+            char n_c = newTimeStr[j] & ~TM1650_DOT;
+            char o_c = oldStr[j] & ~TM1650_DOT;
+            if(newTimeStr[j] != oldStr[j]) {
+                char img = getCharImg(n_c);
+                img |= newTimeStr[j] & TM1650_DOT;
+                tm1650.setPosition(j, img);
+            }
+        }
+        delay(i * ms);
+    }
+    oldStr = newTimeStr;
+}
+
+// 淡入淡出
+// void ShowClock::Motion_FadeInOut(String newTimeStr, uint16_t steps, uint16_t ms, uint16_t wait_ms){
+//     if(!checkTimeStr(newTimeStr)) return;
+//     if(newTimeStr.equals(oldStr)) return;
+//     char tmpStrNew[5];
+//     char tmpStrOld[5];
+//     char tmpStrSpace[5];
+//     strcpy(tmpStrNew, newTimeStr.c_str());
+//     strcpy(tmpStrOld, oldStr.c_str());
+//     for(int i = 0; i < 4; i++) {
+//         tmpStrOld[i] &= ~TM1650_DOT;
+//         tmpStrSpace[i] = tmpStrOld[i];
+//         if(tmpStrSpace[i] & ~TM1650_DOT != tmpStrNew[i] & ~TM1650_DOT) tmpStrSpace[i] = ' ';
+//         tmpStrSpace[i] |= (tmpStrNew[i] & TM1650_DOT);
+//         tmpStrOld[i] |= (tmpStrNew[i] & TM1650_DOT);
+//     }
+//     for(int i = 1; i <= steps; i++) {
+//         tm1650.displayString(tmpStrSpace);
+//         delay(i * ms);
+//         if(i < steps) {
+//             tm1650.displayString(tmpStrOld);
+//             delay((steps - i) * ms);
+//         }
+//     }
+//     delay(wait_ms);
+//     for(int i = 1; i <= steps; i++) {
+//         tm1650.displayString(tmpStrNew);
+//         delay(i * ms);
+//         if(i < steps) {
+//             tm1650.displayString(tmpStrSpace);
+//             delay((steps - i) * ms);
+//         }
+//     }
+//     oldStr = newTimeStr;
+// }
+
+void ShowClock::Motion_SegClear(String newTimeStr, uint16_t ms, uint16_t wait_ms) {
+    if(!checkTimeStr(newTimeStr)) return;
+    if(newTimeStr.equals(oldStr)) return;
+
+    for(int i = 0; i < 4; i++) {
+        char c_s = oldStr[i] & ~TM1650_DOT;
+        char n_s = newTimeStr[i] & ~TM1650_DOT;
+
+        if(c_s != n_s) {
+            char c_o = oldStr[i] & ~TM1650_DOT;
+            char img = getCharImg(c_o);
+            img |= c_o & TM1650_DOT;
+            for(byte mask = 1; mask != 0x80; mask <<= 1) {
+                if(img & mask) {
+                    img &= ~mask;
+                    tm1650.setPosition(i, img);
+                    delay(ms);
+                }
+            }
         }
     }
     delay(wait_ms);
-    for(int i = 1; i <= steps; i++) {
-        tm1650.displayString(tmpStrNew);
-        delay(i * ms);
-        if(i < steps) {
-            tm1650.displayString(tmpStrSpace);
-            delay((steps - i) * ms);
+    for(int i = 3; i <= 0; i--) {
+        char c_s = oldStr[i] & ~TM1650_DOT;
+        char n_s = newTimeStr[i] & ~TM1650_DOT;
+
+        if(c_s != n_s) {
+            char c_o = newTimeStr[i] & ~TM1650_DOT;
+            char img = getCharImg(c_o);
+            img |= newTimeStr[i] & TM1650_DOT;
+            byte mask = 0x80;
+            byte mask_1 = 0x80;
+            for(int j = 0; j < 7; j++) {
+                mask = mask >> 1 | 0x80;
+                mask_1 >>= 1;
+                if(img & mask_1) {
+                    tm1650.setPosition(i, img & mask);
+                    delay(ms);
+                }
+            }
         }
     }
+    oldStr = newTimeStr;
 }
